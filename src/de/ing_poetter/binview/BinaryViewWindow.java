@@ -46,6 +46,7 @@ public class BinaryViewWindow extends JFrame implements ActionListener, Document
     private final Font font = new Font("Monospaced", Font.PLAIN, 14);
     private final JTextArea dataIn = new JTextArea(4, 35);
     private final JFileChooser fc = new JFileChooser();
+    final JButton createFormat = new JButton("create Format");
 
     /**
      *
@@ -77,7 +78,6 @@ public class BinaryViewWindow extends JFrame implements ActionListener, Document
         final JPanel control = new JPanel();
         control.setLayout(new BoxLayout(control, BoxLayout.PAGE_AXIS));
 
-        final JButton createFormat = new JButton("create Format");
         createFormat.setActionCommand(AC_CREATE_FORMAT);
         createFormat.addActionListener(this);
         createFormat.setEnabled(true);
@@ -124,7 +124,7 @@ public class BinaryViewWindow extends JFrame implements ActionListener, Document
         {
             // show window to create new Format.
             @SuppressWarnings("unused")
-            final CreateFormatWindow cfw = new CreateFormatWindow(this);
+            final CreateFormatWindow cfw = new CreateFormatWindow(this, format);
         }
         else if(true == AC_LOAD_FORMAT.equals(e.getActionCommand()))
         {
@@ -175,5 +175,6 @@ public class BinaryViewWindow extends JFrame implements ActionListener, Document
     public void setFormat(final BinaryFormat format)
     {
         this.format = format;
+        createFormat.setText("edit Format");
     }
 }

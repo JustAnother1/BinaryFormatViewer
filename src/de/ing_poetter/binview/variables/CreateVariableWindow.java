@@ -177,6 +177,10 @@ public class CreateVariableWindow extends JFrame implements ActionListener
             {
                 fw.addVariable(v);
             }
+            else
+            {
+                System.out.println("Could not create the Variable !");
+            }
         }
     }
 

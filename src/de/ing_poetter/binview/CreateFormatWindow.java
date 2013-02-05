@@ -46,19 +46,31 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
     private final static String AC_ADD_VARI = "addVari";
     private final static String AC_REMOVE_VARI = "removeVari";
     private final static String AC_EXIT = "exit";
-    private BinaryFormat format = new BinaryFormat();
+    private BinaryFormat format;
     private final JFileChooser fc = new JFileChooser();
-    private final JTable table = new JTable(format);
+    private final JTable table = new JTable();
 
     /**
+     * @param format
      *
      */
-    public CreateFormatWindow(final MainWindow parent)
+    public CreateFormatWindow(final MainWindow parent, final BinaryFormat curFormat)
     {
         this.parent = parent;
         this.setTitle("Binary View - create new Format");
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        if(null == curFormat)
+        {
+            System.out.println("creating format");
+            format = new BinaryFormat();
+        }
+        else
+        {
+            System.out.println("using format");
+            format = curFormat;
+        }
+        table.setModel(format);
         final JPanel root = new JPanel();
         root.setLayout(new FlowLayout());
         root.add(createFormatArea());
@@ -191,17 +203,21 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
     @Override
     public void addVariable(final Variable v)
     {
+        System.out.print("Adding the Variable " + v.getName());
         int row = table.getSelectionModel().getLeadSelectionIndex();
         if(-1 == row)
         {
             // nothing selected
             row = format.getRowCount();
+            System.out.println(" to row " + row);
             format.addVariableAt(v, row);
         }
         else
         {
+            System.out.println(" to row " + row+1);
             format.addVariableAt(v, row+1);
         }
+        table.repaint();
         this.repaint();
     }
 
