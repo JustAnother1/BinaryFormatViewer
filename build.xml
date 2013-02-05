@@ -1,0 +1,21 @@
+<project default="all">
+	<property name="jarName" value="BinView.jar"/>
+	<property name="mainClass" value="de.ing_poetter.binview.BinaryViewerMain"/>
+    <target name="all">
+        <delete file="${jarName}"></delete>
+        <tstamp>
+            <format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+        </tstamp>
+        <javac srcdir="src" destdir="bin" includeantruntime="false" />
+        <jar destfile="${jarName}" update="false">
+            <fileset dir="bin">
+                <include name="**/*.class" />
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="${mainClass}" />
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Built-Date" value="${TODAY}"/>
+            </manifest>
+        </jar>
+    </target>
+</project>
