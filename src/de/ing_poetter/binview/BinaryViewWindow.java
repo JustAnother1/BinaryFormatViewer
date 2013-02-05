@@ -134,9 +134,11 @@ public class BinaryViewWindow extends JFrame implements ActionListener, Document
             {
                 final File f = fc.getSelectedFile();
                 format = BinaryFormat.loadFromFile(f);
+                // try to format the data now
+                formatData();
+                createFormat.setText("edit Format");
             }
-            // try to format the data now
-            formatData();
+            // else loading canceled
         }
         // else ignore event
     }
