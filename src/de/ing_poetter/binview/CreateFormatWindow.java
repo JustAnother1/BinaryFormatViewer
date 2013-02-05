@@ -132,7 +132,9 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
             {
                 final File f = fc.getSelectedFile();
                 format = BinaryFormat.loadFromFile(f);
+                table.setModel(format);
             }
+            this.repaint();
         }
         else if(true == AC_SAVE.equals(e.getActionCommand()))
         {
@@ -160,13 +162,19 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
         {
             try
             {
-                final int row = table.getSelectionModel().getLeadSelectionIndex();
+                int row = table.getSelectionModel().getLeadSelectionIndex();
+                if(-1 == row)
+                {
+                    // No row selected -> last row
+                    row = format.getRowCount() -1;
+                }
                 format.removeVariable(row);
             }
             catch(final NoSuchElementException e1)
             {
                 e1.printStackTrace();
             }
+            this.repaint();
         }
         else if(true == AC_EXIT.equals(e.getActionCommand()))
         {
@@ -194,9 +202,7 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
         {
             format.addVariableAt(v, row+1);
         }
-        System.out.println("Selected row was " + row);
         this.repaint();
-        System.out.println("Added a Variable to the Format !");
     }
 
 }
