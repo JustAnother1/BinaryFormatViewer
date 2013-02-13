@@ -14,18 +14,20 @@
  */
 package de.ing_poetter.binview;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import de.ing_poetter.binview.variables.Variable;
 import de.ing_poetter.binview.variables.VariableFactory;
@@ -36,6 +38,7 @@ import de.ing_poetter.binview.variables.VariableFactory;
  */
 public class BinaryFormat extends AbstractTableModel
 {
+    public final static String ROOT_ELEMENT_NAME = "format";
     private static final long serialVersionUID = 1L;
     private final Vector<Variable> Variables = new Vector<Variable>();
 
@@ -47,39 +50,40 @@ public class BinaryFormat extends AbstractTableModel
 
     public static BinaryFormat loadFromFile(final File f)
     {
-        final BinaryFormat res = new BinaryFormat();
-        if(true == f.canRead())
+        final SAXBuilder builder = new SAXBuilder();
+        Document doc;
+        try
         {
-            BufferedReader br = null;
-            InputStreamReader fr = null;
-            try
+            doc = builder.build(f);
+            Element root = null;
+            root = doc.getRootElement();
+
+            if(false == ROOT_ELEMENT_NAME.equalsIgnoreCase(root.getName()))
             {
-                fr = new InputStreamReader(new FileInputStream(f), Charset.forName("UTF-8"));
-                br = new BufferedReader(fr);
-                String curLine = null;
-                do{
-                    curLine = br.readLine();
-                    if(null != curLine)
-                    {
-                        final Variable v = VariableFactory.createVariableFrom(curLine);
-                        res.addVariable(v);
-                    }
-                }while(null != curLine);
+                System.err.println("Format has invalid root Element of " + root.getName());
+                return null;
             }
-            catch (final FileNotFoundException e)
+
+            final BinaryFormat res = new BinaryFormat();
+
+            final List<Element> vars = root.getChildren();
+            for(int i = 0; i < vars.size(); i++)
             {
-                e.printStackTrace();
+                final Element curVar = vars.get(i);
+                final Variable v = VariableFactory.createVariableFrom(curVar);
+                res.addVariable(v);
             }
-            catch (final IOException e)
-            {
-                e.printStackTrace();
-            }
-            catch(final NoSuchElementException e)
-            {
-                e.printStackTrace();
-            }
+            return res;
         }
-        return res;
+        catch (final JDOMException e)
+        {
+            e.printStackTrace();
+        }
+        catch (final IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public BinaryFormat()
@@ -88,14 +92,19 @@ public class BinaryFormat extends AbstractTableModel
 
     public void saveToFile(final File f) throws IOException
     {
-        final FileWriter fw = new FileWriter(f);
+        final Element root = new Element(ROOT_ELEMENT_NAME);
         for(int i = 0; i < Variables.size(); i++)
         {
             final Variable v = Variables.get(i);
-            final String res = v.save();
-            fw.write(res + "\n");
+            final Element res = v.save();
+            root.addContent(res);
         }
-        fw.close();
+        final Document doc = new Document(root);
+        final XMLOutputter xout = new XMLOutputter(Format.getPrettyFormat());
+        final FileOutputStream bout = new FileOutputStream(f);
+        xout.output(doc, bout);
+        bout.flush();
+        bout.close();
     }
 
     public String aplyTo(final String source)

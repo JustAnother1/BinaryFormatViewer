@@ -14,6 +14,8 @@
  */
 package de.ing_poetter.binview.variables;
 
+import org.jdom2.Element;
+
 
 
 /**
@@ -23,12 +25,12 @@ package de.ing_poetter.binview.variables;
 public class BooleanVariable extends Variable
 {
     /** create Variable from saved Format.
-     * @param line
+     * @param curVar
      *
      */
-    public BooleanVariable(final String line)
+    public BooleanVariable(final Element variable)
     {
-        super(line);
+        super(variable);
         numBits = 1;
     }
 

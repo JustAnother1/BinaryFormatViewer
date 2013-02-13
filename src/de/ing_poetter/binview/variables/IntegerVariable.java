@@ -14,6 +14,8 @@
  */
 package de.ing_poetter.binview.variables;
 
+import org.jdom2.Element;
+
 
 
 /**
@@ -25,29 +27,13 @@ public class IntegerVariable extends Variable
     private final boolean signed;
 
     /**
-     * @param line
+     * @param curVar
      *
      */
-    public IntegerVariable(final String line)
+    public IntegerVariable(final Element variable)
     {
-        super(line);
-        if(true ==sc.hasNext())
-        {
-            final String help = sc.next();
-            if(true == "s".equals(help))
-            {
-                signed = true;
-            }
-            else
-            {
-                signed = false;
-            }
-        }
-        else
-        {
-            // default : unsigned
-            signed = false;
-        }
+        super(variable);
+        signed = Boolean.parseBoolean(variable.getChildText("signed"));
     }
 
     private IntegerVariable(final String name, final int bitNum, final boolean signed)
@@ -90,9 +76,13 @@ public class IntegerVariable extends Variable
     }
 
     @Override
-    protected String getExtraConfiguration()
+    protected Element[] getExtraConfiguration()
     {
-        return "," + signed;
+        final Element[] res = new Element[1];
+        final Element signEle = new Element("signed");
+        signEle.setText("" + signed);
+        res[0] = signEle;
+        return res;
     }
 
     public static Variable getVariable(final String name,final int bitNum, final boolean isSigned)

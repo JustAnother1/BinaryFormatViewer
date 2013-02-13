@@ -14,7 +14,7 @@
  */
 package de.ing_poetter.binview.variables;
 
-import java.util.Scanner;
+import org.jdom2.Element;
 
 /**
  * @author Lars P&ouml;tter
@@ -29,18 +29,20 @@ public class VariableFactory
     {
     }
 
-    public static Variable createVariableFrom(final String line)
+    public static Variable createVariableFrom(final Element curVar)
     {
-        final Scanner sc = new Scanner(line);
-        sc.useDelimiter(",");
-        final String type = sc.next();
+        if(null == curVar)
+        {
+            return null;
+        }
+        final String type = curVar.getName();
         if(true == "bool".equals(type))
         {
-            return new BooleanVariable(line);
+            return new BooleanVariable(curVar);
         }
         else if(true == "int".equals(type))
         {
-            return new IntegerVariable(line);
+            return new IntegerVariable(curVar);
         }
         else
         {

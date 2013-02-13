@@ -14,7 +14,7 @@
  */
 package de.ing_poetter.binview.variables;
 
-import java.util.Scanner;
+import org.jdom2.Element;
 
 /**
  * @author Lars P&ouml;tter
@@ -24,29 +24,35 @@ public abstract class Variable
 {
     protected String Name;
     protected int numBits;
-    protected Scanner sc;
 
     protected Variable()
     {
     }
 
-    protected Variable(final String line)
+    protected Variable(final Element variable)
     {
-        sc = new Scanner(line);
-        sc.useDelimiter(",");
-        sc.next(); // ignore type
-        Name = sc.next();
-        numBits = sc.nextInt();
+        Name = variable.getChildText("Name");
+        numBits = Integer.parseInt(variable.getChildText("numberOfBits"));
     }
 
-    public String save()
+    public Element save()
     {
-        String extra = getExtraConfiguration();
-        if(null == extra)
+        final Element res = new Element(getTypeName());
+        // Name
+        final Element nameEle = new Element("Name");
+        nameEle.setText(Name);
+        res.addContent(nameEle);
+        // Number of Bits
+        final Element numBitsEle = new Element("numberOfBits");
+        numBitsEle.setText("" + numBits);
+        res.addContent(numBitsEle);
+        // Extra Configuration
+        final Element[] extra = getExtraConfiguration();
+        for(int i = 0; i < extra.length; i++)
         {
-            extra = "";
+            res.addContent(extra[i]);
         }
-        return getTypeName() + "," + Name + "," + numBits + extra;
+        return res;
     }
 
     public int getNumberBits()
@@ -66,9 +72,9 @@ public abstract class Variable
 
     public abstract String getTypeName();
 
-    protected String getExtraConfiguration()
+    protected Element[] getExtraConfiguration()
     {
-        return null;
+        return new Element[0];
     }
 
     public abstract String describeValue(boolean[] data, int requestedNameLength);
