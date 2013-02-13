@@ -41,8 +41,9 @@ public class CreateVariableWindow extends JFrame implements ActionListener
 
     private final JTabbedPane tabbedPane = new JTabbedPane();
     private final JTextField NameField = new JTextField(20);
-    final JTextField bitNumValue = new JTextField(20);
-    final JTextField signValue = new JTextField(20);
+    final JTextField bitNumValue = new JTextField(6);
+    final JTextField signValue = new JTextField(6);
+    final JTextField presentationValue = new JTextField(6);
 
     /**
      *
@@ -100,6 +101,13 @@ public class CreateVariableWindow extends JFrame implements ActionListener
         setSign.add(signValue);
         res.add(setSign);
 
+        final JPanel setPresentation = new JPanel(new FlowLayout());
+        final JLabel presentationLabel = new JLabel("Value presentation:");
+        presentationValue.setText("%d");
+        setPresentation.add(presentationLabel);
+        setPresentation.add(presentationValue);
+        res.add(setPresentation);
+
         return res;
     }
 
@@ -135,7 +143,9 @@ public class CreateVariableWindow extends JFrame implements ActionListener
             break;
         case 1: v = IntegerVariable.getVariable(NameField.getText(),
                                                 getIntValue(bitNumValue.getText()),
-                                                Boolean.parseBoolean(signValue.getText()));
+                                                Boolean.parseBoolean(signValue.getText()),
+                                                presentationValue.getText()
+                                                );
             break;
         }
         return v;

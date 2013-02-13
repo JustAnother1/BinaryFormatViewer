@@ -24,7 +24,10 @@ import org.jdom2.Element;
  */
 public class IntegerVariable extends Variable
 {
+    public final static String SIGNED_ELEMENT_NAME = "signed";
     private final boolean signed;
+    public final static String VALUE_PRESENTATION_ELEMENT_NAME = "valuePresentation";
+    private String valuePresenation;
 
     /**
      * @param curVar
@@ -33,15 +36,22 @@ public class IntegerVariable extends Variable
     public IntegerVariable(final Element variable)
     {
         super(variable);
-        signed = Boolean.parseBoolean(variable.getChildText("signed"));
+        signed = Boolean.parseBoolean(variable.getChildText(SIGNED_ELEMENT_NAME));
+        valuePresenation = variable.getChildText(VALUE_PRESENTATION_ELEMENT_NAME);
+        checkVariablePresentation();
     }
 
-    private IntegerVariable(final String name, final int bitNum, final boolean signed)
+    private IntegerVariable(final String name,
+                             final int bitNum,
+                             final boolean signed,
+                             final String valuePresentation)
     {
         super();
         this.Name = name;
         this.numBits = bitNum;
         this.signed = signed;
+        this.valuePresenation = valuePresentation;
+        checkVariablePresentation();
     }
 
     @Override
@@ -66,36 +76,57 @@ public class IntegerVariable extends Variable
         {
             // TODO
         }
-        final StringBuffer sb = CreateNameSecription();
+        final StringBuffer sb = createNameDescription();
         final int spaces = requestedNameLength - sb.length();
         for(int i = 0; i < spaces; i++)
         {
             sb.append(" ");
         }
-        return sb.toString() + ": " + val;
+        return sb.toString() + ": " +String.format(valuePresenation, val);
+        // return sb.toString() + ": " + val;
     }
 
     @Override
     protected Element[] getExtraConfiguration()
     {
-        final Element[] res = new Element[1];
-        final Element signEle = new Element("signed");
+        final Element[] res = new Element[2];
+        final Element signEle = new Element(SIGNED_ELEMENT_NAME);
         signEle.setText("" + signed);
         res[0] = signEle;
+
+        final Element descrEle = new Element(VALUE_PRESENTATION_ELEMENT_NAME);
+        descrEle.setText(valuePresenation);
+        res[1] = descrEle;
         return res;
     }
 
-    public static Variable getVariable(final String name,final int bitNum, final boolean isSigned)
+    public static Variable getVariable(final String name,
+                                        final int bitNum,
+                                        final boolean isSigned,
+                                        final String valuePresentation)
     {
         if(false == isNameValid(name))
         {
             return null;
         }
-        System.out.println("Creating Int Variable with " + bitNum + " bits and signed of " + isSigned + " !");
-        return new IntegerVariable(name, bitNum, isSigned);
+        return new IntegerVariable(name, bitNum, isSigned, valuePresentation);
     }
 
-    private StringBuffer CreateNameSecription()
+    private void checkVariablePresentation()
+    {
+        if(null == valuePresenation)
+        {
+            valuePresenation = "%d";
+        }
+        else
+        {
+            if(2 > valuePresenation.length())
+            {
+                valuePresenation = "%d";
+            }
+        }
+    }
+    private StringBuffer createNameDescription()
     {
         final StringBuffer sb = new StringBuffer();
         sb.append(Name);
@@ -114,7 +145,7 @@ public class IntegerVariable extends Variable
     @Override
     public int getDescriptionLength()
     {
-        final StringBuffer sb = CreateNameSecription();
+        final StringBuffer sb = createNameDescription();
         return sb.length();
     }
 
