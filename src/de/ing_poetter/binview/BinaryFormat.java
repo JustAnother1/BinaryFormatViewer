@@ -107,7 +107,7 @@ public class BinaryFormat extends AbstractTableModel
             return null;
         }
         final Vector<Boolean> bits = getBitsFromString(source);
-        String res = "Found " + bits.size() + " bits in Data !\n";
+        String res = "Found " + bits.size() + " bits / " + bits.size()/8 + " bytes in Data !\n";
 
         int maxDescriptionLength = 0;
         for(int i = 0; i < Variables.size(); i++)
@@ -147,7 +147,7 @@ public class BinaryFormat extends AbstractTableModel
             final StringBuilder sb = new StringBuilder();
             for(int i = 0; i < numAdditionalBits; i++)
             {
-                final Boolean b = bits.get(posInBits);
+                final Boolean b = bits.get(posInBits + i);
                 if(true == b)
                 {
                     sb.append('1');
