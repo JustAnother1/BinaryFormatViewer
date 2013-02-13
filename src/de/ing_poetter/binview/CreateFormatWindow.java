@@ -151,7 +151,7 @@ public class CreateFormatWindow extends JFrame implements ActionListener, Format
         else if(true == AC_SAVE.equals(e.getActionCommand()))
         {
             // show File chooser dialog to select Format File
-            final int returnVal = fc.showOpenDialog(this);
+            final int returnVal = fc.showSaveDialog(this);
             if(JFileChooser.APPROVE_OPTION == returnVal)
             {
                 final File f = fc.getSelectedFile();
